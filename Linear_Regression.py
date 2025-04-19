@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 data = pd.read_csv("C:\\Users\\şerefcanmemiş\\Downloads\\teams.csv")
 data.head()
@@ -7,7 +8,7 @@ data.head()
 X = data[['age','athletes']].copy()
 y = data[['medals']].copy()
 
-def mse(y,predictions):
+def mean_squared_error(y,predictions):
     SSR = ((y - predictions)**2).sum()
     SSR = SSR.values[0]
     return SSR
@@ -39,11 +40,15 @@ class LinearRegression():
         predictions = X @ self.weights
         return predictions
     
+    
+x_train,x_test,y_train,y_test = train_test_split(X,y,test_size=0.2)
+print(x_train.shape)
+print(x_test.shape)
 model = LinearRegression()
-model.fit(X,y)
-preds = model.predict(X)
-R2_score(y,preds)
-mse(y,preds)
+model.fit(x_train,y_train)
+preds = model.predict(x_test)
+R2_score(y_test,preds)
+mean_squared_error(y_test,preds)
 
 
 
