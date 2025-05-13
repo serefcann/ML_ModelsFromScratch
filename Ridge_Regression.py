@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-root_mean_squared_error = lambda y,pred: np.sqrt(((y-pred)**2).sum().values[0])
+root_mean_squared_error = lambda y,pred: np.sqrt(np.mean((y - pred) ** 2))
 def r_squared(y,pred):
     ssr = ((y-pred)**2).sum()
     sst = ((y-np.mean(y))**2).sum()
@@ -47,11 +47,30 @@ model = Ridge_Regression()
 model.fit(xtrain = xtrain_scaled, ytrain = ytrain)
 ridge_predicts = model.predict(xtest_scaled)
 
-root_mean_squared_error(ytest,ridge_predicts) # rmse
-r_squared(ytest,ridge_predicts) # R^2
+root_mean_squared_error(ytest,ridge_predicts) # rmse 44.12
+r_squared(ytest,ridge_predicts) # R^2 0.76
+
+
+# Lets find the best lambda for our Ridge Regression model with given data
+lambdas = np.logspace(-3, 8, 100)  # 0.001 to 10000
+list_rmse = []
+for lamda in lambdas:
+    model = Ridge_Regression(lamda = lamda)
+    model.fit(xtrain = xtrain_scaled, ytrain = ytrain)
+    ridge_predicts = model.predict(xtest_scaled)
+    list_rmse.append(root_mean_squared_error(ytest,ridge_predicts))
+best_lambda = lambdas[np.argmin(list_rmse)]
+
+model = Ridge_Regression(best_lambda)
+model.fit(xtrain = xtrain_scaled, ytrain = ytrain)
+ridge_predicts = model.predict(xtest_scaled)
+
+root_mean_squared_error(ytest,ridge_predicts) # rmse 17.60
+r_squared(ytest,ridge_predicts) # R^2 0.94
+
 
 
 # For test purposes
 from sklearn.linear_model import Ridge
 model = Ridge(alpha=2).fit(xtrain_scaled,ytrain)
-print((model.predict(xtest_scaled) - ridge_predicts).sum()) # for test my model result so close
+print((model.predict(xtest_scaled) - ridge_predicts).sum()) # for test my model result (so close)
